@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        body{
+            padding: 0px;
+            margin: 0px;
+        }
+        #bg-container{
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+        }
+    </style>
+</head>
+<body>
+<div id="bg-container">
+    <canvas id="bg">
+        <p>老铁，你的浏览器不支持canvas啊</p>
+    </canvas>
+</div>
+
+<script>
+
+    class Ball {
+        constructor(x = 50, y = 50, vx = 2, vy = 3, ballWeight = 10){
+            this.x = x
+            this.y = y
+            this.vx = vx
+            this.vy = vy
+            this.ballWeight = ballWeight
+        }
+        move(ctx, width = 300, height = 300, _options = {
+            ballColor: '#ffffff',
+            lineColor: '#ffffff',
+            lineWeight: 1
+        }){
+            let options = {
+                ballColor: _options.ballColor||'#ffffff',
+                lineColor: _options.lineColor||'#ffffff',
+                ballWeight: _options.ballWeight||10,
+                ballAlpha: _options.ballAlpha||0.8
+            }
+            // 判断是否到边界
+            if( this.x >= width - this.ballWeight || this.x <= 0 + this.ballWeight){
+                this.vx = -this.vx
+            }
+            if( this.y >= height - this.ballWeight || this.y <= 0 + this.ballWeight){
+                this.vy = -this.vy
+            }
+            ctx.fillStyle = options.ballColor
+            ctx.beginPath()
+            this.x += this.vx
+            this.y += this.vy
+            ctx.arc(this.x, this.y, this.ballWeight, 0, Math.PI*2)
+            ctx.fill()
+        }
+    }
+
+    /*
+    * 开始
+    * */
+    let start = function (ctx, width = 300, height = 300, _options = {}) {
+        let options = {
+            ballColor: _options.ballColor||'#ffffff',
+            lineColor: _options.lineColor||'#ffffff',
+            ballWeight: _options.ballWeight||10,
+            lineWeight: _options.lineWeight||1,
+            count: _options.count||20,
+            maxV: _options.maxV||2,
+            ballAlpha: _options.ballAlpha||0.8,
+            allowDistance: _options.allowDistance|| 0,
+            lineDistance: _options.lineDistance|| 100
+        }
+        let balls = []
+        for (let i = 0; i< options.count; i++){
+            let vx = Math.random()* options.maxV
+            let vy = Math.random()* options.maxV
+            let x = Math.random()* width
+            let y = Math.random()* height
+            let temp = new Ball(x, y, vx, vy, options.ballWeight)
+            balls.push(temp)
+        }
+        const af = function () {
+            ctx.clearRect(0, 0, width, height)
+            for (let i = 0; i < balls.length; i++){
+                balls[i].move(ctx, width, height)
+                for ( let l = i + 1; l< balls.length; l++) {
+                    // 计算是否碰撞
+                    let dis = Math.sqrt(Math.pow((balls[i].x - balls[l].x),2) + Math.pow((balls[i].y - balls[l].y),2))
+                    console.log(dis)
+                    if(dis <= 2*options.ballWeight + options.allowDistance){
+                    // 碰撞根据动量守恒和动能定理算出碰撞后的速度 假设质量相等
+                        let tempx = balls[i].vx
+                        let tempy = balls[i].vy
+                        balls[i].vx = balls[l].vx
+                        balls[i].vy = balls[l].vy
+                        balls[l].vx = tempx
+                        balls[l].vy = tempy
+                    }
+                    // 连线
+                    if (dis <= 2*options.ballWeight + options.lineDistance) {
+                        ctx.strokeStyle = options.lineColor
+                        ctx.beginPath()
+                        ctx.moveTo(balls[i].x,balls[i].y)
+                        ctx.lineTo(balls[l].x,balls[l].y)
+                        ctx.stroke()
+                    }
+                }
+            }
+            requestAnimationFrame(af)
+        }
+        requestAnimationFrame(af)
+
+    }
+    
+    let init = function () {
+        console.log('body onload init')
+        // 设置canvas大小
+        let canvas = document.getElementById('bg')
+        const WIDTH = document.getElementById('bg-container').clientWidth
+        const HEIGHT = document.getElementById('bg-container').clientHeight
+        canvas.width = WIDTH
+        canvas.height = HEIGHT
+        // 获取ctx
+        let ctx = canvas.getContext('2d')
+        start(ctx, WIDTH, HEIGHT)
+    }
+
+    document.getElementsByTagName('body')[0].onload = init
+</script>
+</body>
+</html>

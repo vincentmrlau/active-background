@@ -1,0 +1,23 @@
+{
+  "name": "active-background",
+  "version": "1.0.0",
+  "description": "make your website alive",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vincentmrlau/active-background.git"
+  },
+  "author": "vincent lau",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vincentmrlau/active-background/issues"
+  },
+  "homepage": "https://github.com/vincentmrlau/active-background#readme",
+  "devDependencies": {
+    "browser-sync": "^2.18.12",
+    "gulp": "^3.9.1"
+  }
+}
