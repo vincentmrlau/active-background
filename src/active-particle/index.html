@@ -38,23 +38,34 @@
         }
         move(ctx, width = 300, height = 300, _options = {
             ballColor: '#ffffff',
-            lineColor: '#ffffff',
-            lineWeight: 1
+            ballAlpha: 0.8
         }){
             let options = {
                 ballColor: _options.ballColor||'#ffffff',
                 lineColor: _options.lineColor||'#ffffff',
                 ballWeight: _options.ballWeight||10,
-                ballAlpha: _options.ballAlpha||0.8
+                ballAlpha: _options.ballAlpha||1
             }
             // 判断是否到边界
             if( this.x >= width - this.ballWeight || this.x <= 0 + this.ballWeight){
                 this.vx = -this.vx
+                // 防止嵌入边界内
+                if(this.x >= width - this.ballWeight){
+                    this.x = width - this.ballWeight
+                } else {
+                    this.x = 0 + this.ballWeight
+                }
             }
             if( this.y >= height - this.ballWeight || this.y <= 0 + this.ballWeight){
                 this.vy = -this.vy
+                if(this.y >= height - this.ballWeight){
+                    this.y = height - this.ballWeight
+                } else {
+                    this.y = 0 + this.ballWeight
+                }
             }
             ctx.fillStyle = options.ballColor
+            ctx.globalAlpha = options.ballAlpha
             ctx.beginPath()
             this.x += this.vx
             this.y += this.vy
@@ -64,9 +75,26 @@
     }
 
     /*
-    * 开始
+    * 开始放置小球并开始运动
+    * 随机放置小球
+    * 给一个在限定范围内的初速度
+    * params
+    * ctx : required
+    * width: canvas width
+    * height: canvas height
+    * options: {
+    *   ballColor: 小球填充样式
+    *   lineColor: 连线填充的样式
+    *   ballWeight: 小球大小
+    *   lineWeight: 线的粗细
+    *   count: 小球初始数量
+    *   maxV: 最大速度
+    *   ballAlpha: 小球透明度
+    *   allowDistance: 允许的球与球之间的距离
+    * }
     * */
     let start = function (ctx, width = 300, height = 300, _options = {}) {
+        // 默认的options
         let options = {
             ballColor: _options.ballColor||'#ffffff',
             lineColor: _options.lineColor||'#ffffff',
@@ -74,7 +102,7 @@
             lineWeight: _options.lineWeight||1,
             count: _options.count||20,
             maxV: _options.maxV||2,
-            ballAlpha: _options.ballAlpha||0.8,
+            ballAlpha: _options.ballAlpha||1,
             allowDistance: _options.allowDistance|| 0,
             lineDistance: _options.lineDistance|| 100
         }
@@ -88,13 +116,16 @@
             balls.push(temp)
         }
         const af = function () {
+            // 清除边界
             ctx.clearRect(0, 0, width, height)
             for (let i = 0; i < balls.length; i++){
-                balls[i].move(ctx, width, height)
+                balls[i].move(ctx, width, height, {
+                    ballColor: options.ballColor,
+                    ballAlpha: options.ballAlpha
+                })
                 for ( let l = i + 1; l< balls.length; l++) {
                     // 计算是否碰撞
                     let dis = Math.sqrt(Math.pow((balls[i].x - balls[l].x),2) + Math.pow((balls[i].y - balls[l].y),2))
-                    console.log(dis)
                     if(dis <= 2*options.ballWeight + options.allowDistance){
                     // 碰撞根据动量守恒和动能定理算出碰撞后的速度 假设质量相等
                         let tempx = balls[i].vx
@@ -103,10 +134,32 @@
                         balls[i].vy = balls[l].vy
                         balls[l].vx = tempx
                         balls[l].vy = tempy
+                        // 防止两个球搞基不分离
+                        let minDis = 2*options.ballWeight + options.allowDistance - dis
+                        let disX = balls[i].x - balls[l].x
+                        let disY = balls[i].y - balls[l].y
+                        let rate = Math.abs(disX/disY)
+                        let addX = minDis/2/Math.sqrt(1+ 1/rate)
+                        if (disX <= 0){
+                            balls[i].x -= addX
+                            balls[l].x += addX
+                        } else {
+                            balls[i].x += addX
+                            balls[l].x -= addX
+                        }
+                        let addY = minDis/2/Math.sqrt(1+ rate)
+                        if (disY <= 0){
+                            balls[i].y -= addY
+                            balls[l].y += addY
+                        } else {
+                            balls[i].y += addY
+                            balls[l].y -= addY
+                        }
                     }
                     // 连线
                     if (dis <= 2*options.ballWeight + options.lineDistance) {
                         ctx.strokeStyle = options.lineColor
+                        ctx.lineWidth = options.lineWeight
                         ctx.beginPath()
                         ctx.moveTo(balls[i].x,balls[i].y)
                         ctx.lineTo(balls[l].x,balls[l].y)
@@ -116,8 +169,7 @@
             }
             requestAnimationFrame(af)
         }
-        requestAnimationFrame(af)
-
+        af()
     }
     
     let init = function () {
@@ -130,7 +182,16 @@
         canvas.height = HEIGHT
         // 获取ctx
         let ctx = canvas.getContext('2d')
-        start(ctx, WIDTH, HEIGHT)
+        let linearGradient = ctx.createLinearGradient(0, 0, WIDTH ,0)
+        linearGradient.addColorStop(0, 'yellow')
+        linearGradient.addColorStop(1, 'red')
+        start(ctx, WIDTH, HEIGHT, {
+            lineColor: linearGradient,
+            ballColor: linearGradient,
+            lineWeight: 2,
+            count: 15,
+            ballWeight: 10
+        })
     }
 
     document.getElementsByTagName('body')[0].onload = init
