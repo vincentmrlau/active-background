@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>emoji</title>
+    <style>
+        body{
+            padding: 0px;
+            margin: 0px;
+        }
+        #bg{
+            position: absolute;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="bg">
+    <p>老铁，你的浏览器不支持canvas啊</p>
+</canvas>
+</body>
+<script>
+    // 设置canvas大小
+    let canvas = document.getElementById('bg')
+    const WIDTH = window.innerWidth
+    const HEIGHT = window.innerHeight
+    canvas.width = WIDTH
+    canvas.height = HEIGHT
+
+    let ctx = canvas.getContext('2d')
+
+    /*
+    * why i set those props
+    * there is a prop livingTime,because i make emoji 'die' when i too large or beyond the canvas
+    * so that the change slower one will live a long time .In the end there will be many slow-changing-emoji.
+    * so,i make those living-long-emoji fall to die ,LOL
+    * */
+    class Emoji {
+        constructor(x, y, size, emoji, vx, vy, vSize){
+            this.x = x
+            this.y = y
+            this.size = size
+            this.emoji = emoji
+            this.vx = vx
+            this.vy = vy
+            this.vSize = vSize
+            this.livingTime = 0
+        }
+
+        move(ctx){
+            ctx.textAlign='center'
+            ctx.textBaseline = 'middle'
+            ctx.font = this.size + 'px serif'
+            ctx.fillText(this.emoji, this.x, this.y)
+            this.x += this.vx
+            this.y += this.vy
+            this.size += this.vSize * this.vSize
+            this.livingTime += 1
+            if(this.livingTime > 100) {
+                this.vy = this.vy+10
+            }
+        }
+    }
+
+    /*
+    * start swarming ,shake plz human!😇
+    * emojiStr: you can change the emoji list by changing this
+    * count : how many emoji would you like to put in
+    * size: is the max size when the emoji born
+    * */
+    let start = (emojiStr,ctx, count = 10, width = 300, height = 300, size = 10) => {
+        let livingEmojis = []
+        let setNewOne = () => {
+            let vx = (Math.random()-0.5)*0.001
+            let vy = (Math.random()-0.5)*2
+            let vSize = Math.random()*10
+            let emoji = emojiStr[Math.floor(Math.random()*emojiStr.length)]
+            let tempX = Math.random()*width
+            let tempY = Math.random()*height
+            let tempSize = Math.random()*size
+
+            let tempEmoji = new Emoji(tempX, tempY, tempSize, emoji,vx, vy, vSize)
+            // put the first part
+            tempEmoji.move(ctx)
+            return tempEmoji
+
+        }
+
+        for(let i = 0; i < count;i++) {
+            // first setting
+            // store
+            livingEmojis.push(setNewOne())
+        }
+        let aq = () => {
+            ctx.clearRect(0,0,width,height)
+            let spliceCounter = 0
+            let oriLength = livingEmojis.length
+            for(let i = 0; i<oriLength;i++){
+                let item = livingEmojis[i]
+                item.move(ctx)
+                // beyond the border,emoji out
+                if(item.size>width
+                    ||item.size>height
+                    ||item.x + 2*item.size<=0
+                    ||item.x - 2*item.size>=width
+                    ||item.y + 2*item.size<=0
+                    ||item.y - 2*item.size>=height
+                ){
+                    livingEmojis[i]=setNewOne()
+                }
+            }
+
+            requestAnimationFrame(aq)
+        }
+        aq()
+    }
+
+    let emojiStr = [
+        '😊','🙂','😂'
+    ]
+
+    start(emojiStr, ctx, 50, WIDTH, HEIGHT)
+
+</script>
+</html>
