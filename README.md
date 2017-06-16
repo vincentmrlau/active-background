@@ -21,3 +21,13 @@
 
 ![](https://raw.githubusercontent.com/vincentmrlau/active-background/master/images/belt-1.png)
 ![](https://raw.githubusercontent.com/vincentmrlau/active-background/master/images/belt-2.png)
+
+## swarming emoji
+> very funny one LOL
+> 
+> [demo](https://vincentmrlau.github.io/active-background/src/swarming-emoji/)
+> 
+> [code](https://github.com/vincentmrlau/active-background/tree/master/src/belt)
+
+![](https://raw.githubusercontent.com/vincentmrlau/active-background/master/images/emoji.png)
+
