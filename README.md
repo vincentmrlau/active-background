@@ -25,7 +25,7 @@
 ![](https://raw.githubusercontent.com/vincentmrlau/active-background/master/images/belt-2.png)
 
 ## swarming emoji
-> very funny one LOL
+> very funny one LOL,we can choose any emoji ,HAHAHA
 > 
 > [demo](https://vincentmrlau.github.io/active-background/src/swarming-emoji/)
 > 
