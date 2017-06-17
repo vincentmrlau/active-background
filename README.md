@@ -29,7 +29,7 @@
 > 
 > [demo](https://vincentmrlau.github.io/active-background/src/swarming-emoji/)
 > 
-> [code](https://github.com/vincentmrlau/active-background/tree/master/src/belt)
+> [code](https://github.com/vincentmrlau/active-background/tree/master/src/swarming-emoji)
 
 ![](https://raw.githubusercontent.com/vincentmrlau/active-background/master/images/emoji.jpg)
 
