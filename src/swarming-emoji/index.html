@@ -75,7 +75,7 @@
     let start = (emojiStr,ctx, count = 10, width = 300, height = 300, size = 10) => {
         let livingEmojis = []
         let setNewOne = () => {
-            let vx = (Math.random()-0.5)*0.001
+            let vx = (Math.random()-0.5)*2
             let vy = (Math.random()-0.5)*2
             let vSize = Math.random()*10
             let emoji = emojiStr[Math.floor(Math.random()*emojiStr.length)]
@@ -110,7 +110,14 @@
                     ||item.y + 2*item.size<=0
                     ||item.y - 2*item.size>=height
                 ){
-                    livingEmojis[i]=setNewOne()
+                    // reborn!!!
+                    item.x = Math.random()*width
+                    item.y = Math.random()*height
+                    item.vx = (Math.random() - 0.5)*2
+                    item.vy = (Math.random() - 0.5)*2
+                    item.vSize = Math.random()*10
+                    item.size = Math.random()*size
+                    item.livingTime = 0
                 }
             }
 
@@ -123,7 +130,8 @@
         '😊','🙂','😂'
     ]
 
-    start(emojiStr, ctx, 50, WIDTH, HEIGHT)
+
+    start(emojiStr, ctx, 10, WIDTH, HEIGHT)
 
 </script>
 </html>
